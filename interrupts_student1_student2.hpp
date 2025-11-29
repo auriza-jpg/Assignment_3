@@ -65,7 +65,9 @@ struct PCB{
     enum states     state;
     unsigned int    io_freq;
     unsigned int    io_duration;
+    int             EP;
 };
+
 
 //------------------------------------HELPER FUNCTIONS FOR THE SIMULATOR------------------------------
 // Following function was taken from stackoverflow; helper function for splitting strings
@@ -269,7 +271,7 @@ PCB add_process(std::vector<std::string> tokens) {
     process.start_time = -1;
     process.partition_number = -1;
     process.state = NOT_ASSIGNED;
-
+    process.EP = process.PID; 
     return process;
 }
 
@@ -299,8 +301,11 @@ void run_process(PCB &running, std::vector<PCB> &job_queue, std::vector<PCB> &re
     ready_queue.pop_back();
     running.start_time = current_time;
     running.state = RUNNING;
+    running.processing_time = 0; 
     sync_queue(job_queue, running);
 }
+
+
 
 void idle_CPU(PCB &running) {
     running.start_time = 0;

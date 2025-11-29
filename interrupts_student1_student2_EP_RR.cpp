@@ -25,7 +25,7 @@ std::tuple<std::string /* add std::string for bonus mark */ > run_simulation(std
                                     //to the "Process, Arrival time, Burst time" table that you
                                     //see in questions. You don't need to use it, I put it here
                                     //to make the code easier :).
-
+     std::vector<PCB> job_list;
     unsigned int current_time = 0;
     PCB running;
 
@@ -63,11 +63,12 @@ std::tuple<std::string /* add std::string for bonus mark */ > run_simulation(std
 
         ///////////////////////MANAGE WAIT QUEUE/////////////////////////
         //This mainly involves keeping track of how long a process must remain in the ready queue
-
+   
         /////////////////////////////////////////////////////////////////
 
         //////////////////////////SCHEDULER//////////////////////////////
         FCFS(ready_queue); //example of FCFS is shown here
+        run_process(running,job_list,ready_queue,current_time);
         /////////////////////////////////////////////////////////////////
 
     }
@@ -109,6 +110,7 @@ int main(int argc, char** argv) {
         list_process.push_back(new_process);
     }
     input_file.close();
+    printf("Closed file");
 
     //With the list of processes, run the simulation
     auto [exec] = run_simulation(list_process);
