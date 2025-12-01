@@ -1,0 +1,87 @@
++------------------------------------------------+
+|Time of Transition |PID | Old State | New State |
++------------------------------------------------+
+|                 0 |668 |       NEW |     READY |
+|                 0 |668 |     READY |   RUNNING |
+|                 4 |668 |   RUNNING |   WAITING |
+|                 6 |668 |   WAITING |     READY |
+|                 6 |668 |     READY |   RUNNING |
+|                10 |668 |   RUNNING |   WAITING |
+|                12 |668 |   WAITING |     READY |
+|                12 |668 |     READY |   RUNNING |
+|                16 |668 |   RUNNING |   WAITING |
+|                18 |942 |       NEW |     READY |
+|                18 |668 |   WAITING |     READY |
+|                18 |942 |     READY |   RUNNING |
+|                22 |942 |   RUNNING |   WAITING |
+|                22 |668 |     READY |   RUNNING |
+|                24 |942 |   WAITING |     READY |
+|                26 |668 |   RUNNING |   WAITING |
+|                26 |942 |     READY |   RUNNING |
+|                28 |668 |   WAITING |     READY |
+|                30 |942 |   RUNNING |   WAITING |
+|                30 |668 |     READY |   RUNNING |
+|                32 |942 |   WAITING |     READY |
+|                34 |668 |   RUNNING |   WAITING |
+|                34 |942 |     READY |   RUNNING |
+|                35 |501 |       NEW |     READY |
+|                36 |668 |   WAITING |     READY |
+|                38 |942 |   RUNNING |   WAITING |
+|                38 |501 |     READY |   RUNNING |
+|                40 |942 |   WAITING |     READY |
+|                42 |501 |   RUNNING |   WAITING |
+|                42 |668 |     READY |   RUNNING |
+|                44 |501 |   WAITING |     READY |
+|                46 |668 |   RUNNING |   WAITING |
+|                46 |942 |     READY |   RUNNING |
+|                48 |668 |   WAITING |     READY |
+|                50 |942 |   RUNNING |   WAITING |
+|                50 |501 |     READY |   RUNNING |
+|                52 |942 |   WAITING |     READY |
+|                54 |501 |   RUNNING |   WAITING |
+|                54 |668 |     READY |   RUNNING |
+|                55 |668 |   RUNNING |TERMINATED |
+|                55 |942 |     READY |   RUNNING |
+|                56 |355 |       NEW |     READY |
+|                56 |501 |   WAITING |     READY |
+|                59 |942 |   RUNNING |   WAITING |
+|                59 |501 |     READY |   RUNNING |
+|                61 |942 |   WAITING |     READY |
+|                63 |501 |   RUNNING |   WAITING |
+|                63 |355 |     READY |   RUNNING |
+|                65 |501 |   WAITING |     READY |
+|                67 |355 |   RUNNING |   WAITING |
+|                67 |942 |     READY |   RUNNING |
+|                69 |355 |   WAITING |     READY |
+|                71 |942 |   RUNNING |   WAITING |
+|                71 |501 |     READY |   RUNNING |
+|                73 |942 |   WAITING |     READY |
+|                75 |501 |   RUNNING |   WAITING |
+|                75 |355 |     READY |   RUNNING |
+|                77 |501 |   WAITING |     READY |
+|                79 |355 |   RUNNING |   WAITING |
+|                79 |942 |     READY |   RUNNING |
+|                81 |355 |   WAITING |     READY |
+|                82 |942 |   RUNNING |TERMINATED |
+|                82 |355 |     READY |   RUNNING |
+|                86 |355 |   RUNNING |   WAITING |
+|                86 |501 |     READY |   RUNNING |
+|                88 |355 |   WAITING |     READY |
+|                90 |501 |   RUNNING |   WAITING |
+|                90 |355 |     READY |   RUNNING |
+|                92 |501 |   WAITING |     READY |
+|                94 |355 |   RUNNING |   WAITING |
+|                94 |501 |     READY |   RUNNING |
+|                96 |355 |   WAITING |     READY |
+|                96 |501 |   RUNNING |TERMINATED |
+|                96 |355 |     READY |   RUNNING |
+|               100 |355 |   RUNNING |   WAITING |
+|               102 |355 |   WAITING |     READY |
+|               102 |355 |     READY |   RUNNING |
+|               106 |355 |   RUNNING |   WAITING |
+|               108 |355 |   WAITING |     READY |
+|               108 |355 |     READY |   RUNNING |
+|               112 |355 |   RUNNING |   WAITING |
+|               114 |355 |   WAITING |     READY |
+|               114 |355 |     READY |   RUNNING |
+|               116 |355 |   RUNNING |TERMINATED |

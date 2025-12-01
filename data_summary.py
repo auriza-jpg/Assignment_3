@@ -1,28 +1,37 @@
-
-import os 
-import csv
-from tracemalloc import start
+import os
 
 
 def read_output_files(path):
-    blocks = []
+    events = []
     with open(path) as f:
         for line in f:
-            if line.startswith("|"):
-                cols = [x.strip() for x in line.split("|")[1:-1]]
-                time, pid, last_state, new_state = cols
-                blocks.append({
-                    "time": int(time),
-                    "pid": int(pid),
-                    "old": last_state,
-                    "new": new_state
-                })
-    return blocks
+            line = line.strip()
+            if not line.startswith("|"):
+                continue
+
+            cols = [x.strip() for x in line.split("|")[1:-1]]
+            if len(cols) != 4:
+                continue
+
+            time, pid, old, new = cols
+
+            if not time.isdigit():
+                continue
+
+            events.append({
+                "time": int(time),
+                "pid": int(pid),
+                "old": old,
+                "new": new
+            })
+
+    return events
+
 
 def anaylze_data(blocks):
 
     first_pass = {}
-    termintated = {}
+    terminated = {}
     start_times = {}
     wait_time = {}
     last_ready = {}
@@ -34,147 +43,83 @@ def anaylze_data(blocks):
         time = block["time"]
         pids.add(pid)
 
+        if pid not in wait_time:
+            wait_time[pid] = 0
+        if pid not in io_times:
+            io_times[pid] = []
 
-         #running to waiting: started IO at the time 
-        if block["old"] == "RUNNING" and block["new"] == "WAITING":
-            io_times[pid].append(time)
-        if block["new"] == "NEW":
+        if block["old"] == "NEW" and block["new"] == "READY":
             start_times[pid] = time
-        # ready to running: time spent in ready Q
+            last_ready[pid] = time
+
         if block["old"] == "READY" and block["new"] == "RUNNING":
             if pid not in first_pass:
                 first_pass[pid] = time
-            if pid in last_ready:
-                wait_time[pid] += time - last_ready[pid]
-        # waiting to ready
+            wait_time[pid] += time - last_ready[pid]
+        if block["old"] == "RUNNING" and block["new"] == "WAITING":
+            io_times[pid].append(time)
+
+    
         if block["old"] == "WAITING" and block["new"] == "READY":
             last_ready[pid] = time
- # new to ready
-        if block["old"] == "NEW" and block["new"] == "READY":
-            block[pid] = time
-            last_ready[pid] = time
-            wait_time[pid] = 0
-            io_times[pid] = []
-        # terminated 
         if block["new"] == "TERMINATED":
-            termintated[pid] = time
+            terminated[pid] = time
 
-    #now use the data to find wait time etc 
     pids = sorted(pids)
     N = len(pids)
 
-    total_time = max(termintated.values()) # how long the whole thing took = largest endtime
+    total_time = max(terminated.values())
     throughput = N / total_time
     avg_wait = sum(wait_time[p] for p in pids) / N
-    avg_turn = sum(termintated[p] - start_times[p] for p in pids) / N
+    avg_turn = sum(terminated[p] - start_times[p] for p in pids) / N
 
-    io_wait_time = []
+    # response times
+    io_gaps = []
     for p in pids:
-        ios = io_times[p]
-        for i in range(1, len(ios)): #all test cases will need at least two IO calls
-            try:
-                io_wait_time.append(ios[i] - ios[i - 1])
-            except: io_wait_time.append(0)
+        for i in range(1, len(io_times[p])):
+            io_gaps.append(io_times[p][i] - io_times[p][i-1])
 
-    
-    try:
-        avg_response = sum(io_wait_time) / len(io_wait_time + 0.01 ) 
-    except: avg_response = 0
+    avg_resp = sum(io_gaps)/len(io_gaps) if io_gaps else 0
 
-    return throughput, avg_wait, avg_turn, avg_response
+    return throughput, avg_wait, avg_turn, avg_resp
 
-def main():
-    import sys
-    blocks = read_output_files(sys.argv[1])
-    throughput, avg_wait, avg_turn, avg_response = anaylze_data(blocks)
+def average(values):
+    if not values:
+        return (0, 0, 0, 0)
+    n = len(values)
+    s = [sum(v[i] for v in values) / n for i in range(4)]
+    return tuple(s)
 
-    print(f"Throughput:            {throughput:.3f}")
-    print(f"Average Wait Time:     {avg_wait:.3f}")
-    print(f"Average Turnaround:    {avg_turn:.3f}")
-    print(f"Average Response Time: {avg_response:.3f}")
-   
-def csv_gen(root_dir, out_csv):
 
-    simulators = ["interrupts_EP", "interrupts_RR", "interrupts_RR_EP"]
+def summarize(root):
+    schedulers = ["interrupts_EP", "interrupts_RR", "interrupts_RR_EP"]
     categories = ["IO", "CPU", "Balanced"]
 
-    results = {}
-    
+    results = {c: {s: [] for s in schedulers} for c in categories}
 
-    #gather data from output files using the above functions 
-    for sim in simulators:
-        sim_path = os.path.join(root_dir, sim)
-        if not os.path.isdir(sim_path):
-            continue
-
+    for sched in schedulers:
         for cat in categories:
-            cat_path = os.path.join(sim_path, cat)
-            if not os.path.isdir(cat_path):
+            folder = os.path.join(root, sched, cat)
+            if not os.path.isdir(folder):
                 continue
 
-            for fname in os.listdir(cat_path):
+            for fname in os.listdir(folder):
                 if not fname.endswith(".txt"):
                     continue
 
-                fullpath = os.path.join(cat_path, fname)
-                blocks = read_output_files(fullpath)
-                output = anaylze_data(blocks)
-                key = (cat, fname)
-                if key not in results:
-                    results[key] = {}
-                results[key][sim] = output 
+                blocks = read_output_files(os.path.join(folder, fname))
+                r = anaylze_data(blocks)
+                if r is not None:
+                    results[cat][sched].append(r)
 
+    for cat in categories:
+        print(f"\n=== {cat} AVERAGES ===")
+        for sched in schedulers:
+            avg_vals = average(results[cat][sched])
+            t, w, turn, resp = avg_vals
+            print(f"{sched:15s}  Throughput={t:.4f}  Wait={w:.2f}  Turnaround={turn:.2f}  Response={resp:.2f}")
 
-    with open(out_csv, "w", newline="") as f:
-        w = csv.writer(f)
-
-        w.writerow([
-            "Category",
-            "Testcase",
-
-            "EP Throughput",
-            "EP Avg Wait",
-            "EP Avg Turnaround",
-            "EP Avg Response",
-
-            "RR Throughput",
-            "RR Avg Wait",
-            "RR Avg Turnaround",
-            "RR Avg Response",
-
-            "RR_EP Throughput",
-            "RR_EP Avg Wait",
-            "RR_EP Avg Turnaround",
-            "RR_EP Avg Response"
-        ])
-
-        for (cat, fname), sims in sorted(results.items()):
-
-            
-            def get(sim, index):
-                return f"{sims[sim][index]:.4f}" if sim in sims else ""
-
-            w.writerow([
-                cat,
-                fname,
-
-                get("interrupts_EP", 0),
-                get("interrupts_EP", 1),
-                get("interrupts_EP", 2),
-                get("interrupts_EP", 3),
-
-                get("interrupts_RR", 0),
-                get("interrupts_RR", 1),
-                get("interrupts_RR", 2),
-                get("interrupts_RR", 3),
-
-                get("interrupts_RR_EP", 0),
-                get("interrupts_RR_EP", 1),
-                get("interrupts_RR_EP", 2),
-                get("interrupts_RR_EP", 3)
-            ])
 
 if __name__ == "__main__":
     import sys
-    csv_gen(sys.argv[1], sys.argv[2])
-
+    summarize(sys.argv[1])

@@ -168,14 +168,14 @@ std::tuple<std::string /* add std::string for bonus mark */ > run_simulation(std
              if(process.arrival_time == current_time || waiting_for_memory(process,needs_memory)){
                 //if so, assign memory and put the process into the ready queue
                 if(assign_memory(process)){
-                    process.arrival_time = current_time; //update arrival time for processes that did not get memory on arrival 
+
                     process.state = READY;  //Set the process state to READY
                     ready_queue.push_back(process); //Add the process to the ready queue
                     job_list.push_back(process); //Add it to the list of processes
                     process.EP = process.PID + process.size;
                     execution_status += print_exec_status(current_time, process.PID, NEW, READY);
+
                 }
-                else needs_memory.push_back(process);
                
             }
         }
@@ -216,6 +216,7 @@ std::tuple<std::string /* add std::string for bonus mark */ > run_simulation(std
         if(all_process_terminated(job_list)){
             return make_tuple(execution_status);
         }
+        
     }
     
     //Close the output table
@@ -250,8 +251,9 @@ int main(int argc, char** argv) {
     std::string line;
     std::vector<PCB> list_process;
     while(std::getline(input_file, line)) {
-        auto input_tokens = split_delim(line, ", ");
+        auto input_tokens = split_delim(line,"a");
         auto new_process = add_process(input_tokens);
+        if (input_tokens.size() != 6) continue;
         list_process.push_back(new_process);
     }
     input_file.close();

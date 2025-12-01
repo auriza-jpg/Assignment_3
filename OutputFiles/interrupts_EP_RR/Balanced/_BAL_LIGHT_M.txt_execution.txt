@@ -1,0 +1,66 @@
++------------------------------------------------+
+|Time of Transition |PID | Old State | New State |
++------------------------------------------------+
+|                 0 |522 |       NEW |     READY |
+|                 0 |522 |     READY |   RUNNING |
+|                 1 |651 |       NEW |     READY |
+|                 3 |522 |   RUNNING |   WAITING |
+|                 3 |651 |     READY |   RUNNING |
+|                 5 |522 |   WAITING |     READY |
+|                 6 |651 |   RUNNING |   WAITING |
+|                 6 |522 |     READY |   RUNNING |
+|                 8 |651 |   WAITING |     READY |
+|                 9 |522 |   RUNNING |   WAITING |
+|                 9 |651 |     READY |   RUNNING |
+|                11 |522 |   WAITING |     READY |
+|                12 |651 |   RUNNING |   WAITING |
+|                12 |522 |     READY |   RUNNING |
+|                14 |651 |   WAITING |     READY |
+|                15 |522 |   RUNNING |   WAITING |
+|                15 |651 |     READY |   RUNNING |
+|                17 |522 |   WAITING |     READY |
+|                18 |651 |   RUNNING |   WAITING |
+|                18 |522 |     READY |   RUNNING |
+|                20 |651 |   WAITING |     READY |
+|                21 |522 |   RUNNING |   WAITING |
+|                21 |651 |     READY |   RUNNING |
+|                23 |522 |   WAITING |     READY |
+|                24 |651 |   RUNNING |   WAITING |
+|                24 |522 |     READY |   RUNNING |
+|                26 |651 |   WAITING |     READY |
+|                27 |522 |   RUNNING |   WAITING |
+|                27 |651 |     READY |   RUNNING |
+|                29 |522 |   WAITING |     READY |
+|                30 |651 |   RUNNING |   WAITING |
+|                30 |522 |     READY |   RUNNING |
+|                32 |651 |   WAITING |     READY |
+|                33 |522 |   RUNNING |   WAITING |
+|                33 |651 |     READY |   RUNNING |
+|                35 |522 |   WAITING |     READY |
+|                36 |651 |   RUNNING |   WAITING |
+|                36 |522 |     READY |   RUNNING |
+|                38 |651 |   WAITING |     READY |
+|                39 |522 |   RUNNING |   WAITING |
+|                39 |651 |     READY |   RUNNING |
+|                41 |522 |   WAITING |     READY |
+|                42 |651 |   RUNNING |   WAITING |
+|                42 |522 |     READY |   RUNNING |
+|                44 |651 |   WAITING |     READY |
+|                45 |522 |   RUNNING |   WAITING |
+|                45 |651 |     READY |   RUNNING |
+|                47 |522 |   WAITING |     READY |
+|                48 |651 |   RUNNING |   WAITING |
+|                48 |522 |     READY |   RUNNING |
+|                50 |651 |   WAITING |     READY |
+|                51 |522 |   RUNNING |   WAITING |
+|                51 |651 |     READY |   RUNNING |
+|                53 |522 |   WAITING |     READY |
+|                54 |651 |   RUNNING |   WAITING |
+|                54 |522 |     READY |   RUNNING |
+|                56 |651 |   WAITING |     READY |
+|                57 |522 |   RUNNING |   WAITING |
+|                57 |651 |     READY |   RUNNING |
+|                58 |651 |   RUNNING |TERMINATED |
+|                59 |522 |   WAITING |     READY |
+|                59 |522 |     READY |   RUNNING |
+|                61 |522 |   RUNNING |TERMINATED |

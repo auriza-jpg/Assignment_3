@@ -71,19 +71,28 @@ struct PCB{
 
 //------------------------------------HELPER FUNCTIONS FOR THE SIMULATOR------------------------------
 // Following function was taken from stackoverflow; helper function for splitting strings
-std::vector<std::string> split_delim(std::string input, std::string delim) {
+std::vector<std::string> split_delim(std::string input,std::string delim) 
+{
     std::vector<std::string> tokens;
-    std::size_t pos = 0;
     std::string token;
-    while ((pos = input.find(delim)) != std::string::npos) {
-        token = input.substr(0, pos);
+    std::stringstream ss(input);
+
+    while (std::getline(ss, token, ',')) 
+    {
+        // trim leading spaces
+        while (!token.empty() && token.front() == ' ')
+            token.erase(token.begin());
+
+        // trim trailing spaces
+        while (!token.empty() && token.back() == ' ')
+            token.pop_back();
+
         tokens.push_back(token);
-        input.erase(0, pos + delim.length());
     }
-    tokens.push_back(input);
 
     return tokens;
 }
+
 
 //Function that takes a queue as an input and outputs a string table of PCBs
 std::string print_PCB(std::vector<PCB> _PCB) {

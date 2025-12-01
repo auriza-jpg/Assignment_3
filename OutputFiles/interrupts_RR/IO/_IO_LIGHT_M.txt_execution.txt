@@ -1,0 +1,61 @@
++------------------------------------------------+
+|Time of Transition |PID | Old State | New State |
++------------------------------------------------+
+|                 0 |421 |       NEW |     READY |
+|                 0 |421 |     READY |   RUNNING |
+|                 1 |305 |       NEW |     READY |
+|                 2 |421 |   RUNNING |   WAITING |
+|                 2 |305 |     READY |   RUNNING |
+|                 4 |421 |   WAITING |     READY |
+|                 4 |305 |   RUNNING |   WAITING |
+|                 4 |421 |     READY |   RUNNING |
+|                 6 |305 |   WAITING |     READY |
+|                 6 |421 |   RUNNING |   WAITING |
+|                 6 |305 |     READY |   RUNNING |
+|                 8 |421 |   WAITING |     READY |
+|                 8 |305 |   RUNNING |   WAITING |
+|                 8 |421 |     READY |   RUNNING |
+|                10 |305 |   WAITING |     READY |
+|                10 |421 |   RUNNING |   WAITING |
+|                10 |305 |     READY |   RUNNING |
+|                12 |421 |   WAITING |     READY |
+|                12 |305 |   RUNNING |   WAITING |
+|                12 |421 |     READY |   RUNNING |
+|                14 |305 |   WAITING |     READY |
+|                14 |421 |   RUNNING |   WAITING |
+|                14 |305 |     READY |   RUNNING |
+|                16 |421 |   WAITING |     READY |
+|                16 |305 |   RUNNING |   WAITING |
+|                16 |421 |     READY |   RUNNING |
+|                18 |305 |   WAITING |     READY |
+|                18 |421 |   RUNNING |   WAITING |
+|                18 |305 |     READY |   RUNNING |
+|                20 |421 |   WAITING |     READY |
+|                20 |305 |   RUNNING |   WAITING |
+|                20 |421 |     READY |   RUNNING |
+|                22 |305 |   WAITING |     READY |
+|                22 |421 |   RUNNING |   WAITING |
+|                22 |305 |     READY |   RUNNING |
+|                24 |421 |   WAITING |     READY |
+|                24 |305 |   RUNNING |   WAITING |
+|                24 |421 |     READY |   RUNNING |
+|                26 |305 |   WAITING |     READY |
+|                26 |421 |   RUNNING |   WAITING |
+|                26 |305 |     READY |   RUNNING |
+|                28 |421 |   WAITING |     READY |
+|                28 |305 |   RUNNING |   WAITING |
+|                28 |421 |     READY |   RUNNING |
+|                30 |305 |   WAITING |     READY |
+|                30 |421 |   RUNNING |   WAITING |
+|                30 |305 |     READY |   RUNNING |
+|                32 |421 |   WAITING |     READY |
+|                32 |305 |   RUNNING |   WAITING |
+|                32 |421 |     READY |   RUNNING |
+|                34 |305 |   WAITING |     READY |
+|                34 |421 |   RUNNING |TERMINATED |
+|                34 |305 |     READY |   RUNNING |
+|                36 |305 |   RUNNING |   WAITING |
+|                38 |305 |   WAITING |     READY |
+|                38 |305 |     READY |   RUNNING |
+|                40 |305 |   RUNNING |TERMINATED |
++------------------------------------------------+

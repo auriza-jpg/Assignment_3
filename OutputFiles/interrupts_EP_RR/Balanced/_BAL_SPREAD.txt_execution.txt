@@ -49,18 +49,18 @@
 |                74 |511 |     READY |   RUNNING |
 |                76 |844 |   WAITING |     READY |
 |                78 |511 |   RUNNING |TERMINATED |
-|                78 |844 |     READY |   RUNNING |
-|                83 |844 |   RUNNING |   WAITING |
-|                83 |290 |     READY |   RUNNING |
-|                85 |844 |   WAITING |     READY |
-|                88 |290 |   RUNNING |   WAITING |
-|                88 |844 |     READY |   RUNNING |
-|                90 |290 |   WAITING |     READY |
-|                92 |844 |   RUNNING |TERMINATED |
-|                92 |290 |     READY |   RUNNING |
-|                97 |290 |   RUNNING |   WAITING |
+|                78 |290 |     READY |   RUNNING |
+|                83 |290 |   RUNNING |   WAITING |
+|                83 |844 |     READY |   RUNNING |
+|                85 |290 |   WAITING |     READY |
+|                88 |844 |   RUNNING |   WAITING |
+|                88 |290 |     READY |   RUNNING |
+|                90 |844 |   WAITING |     READY |
+|                93 |290 |   RUNNING |   WAITING |
+|                93 |844 |     READY |   RUNNING |
+|                95 |290 |   WAITING |     READY |
+|                97 |844 |   RUNNING |TERMINATED |
 |                97 |673 |     READY |   RUNNING |
-|                99 |290 |   WAITING |     READY |
 |               102 |673 |   RUNNING |   WAITING |
 |               102 |290 |     READY |   RUNNING |
 |               104 |673 |   WAITING |     READY |
@@ -106,4 +106,3 @@
 |               178 |673 |   WAITING |     READY |
 |               178 |673 |     READY |   RUNNING |
 |               179 |673 |   RUNNING |TERMINATED |
-+------------------------------------------------+

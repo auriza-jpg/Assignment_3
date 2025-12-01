@@ -11,13 +11,6 @@ CATEGORIES=("IO" "CPU" "Balanced")
 
 mkdir -p "$OUTPUT_ROOT"
 
-rm -rf bin
-mkdir -p bin
-
-g++ -g -O0 -I . -o bin/interrupts_EP        interrupts_EP.cpp
-g++ -g -O0 -I . -o bin/interrupts_RR        interrupts_RR.cpp
-g++ -g -O0 -I . -o bin/interrupts_RR_EP     interrupts_EP_RR.cpp
-
 # for each sim
 for sim in "${SIMS[@]}"; do
     SIM_PATH="bin/$sim"
@@ -45,21 +38,21 @@ for sim in "${SIMS[@]}"; do
             filename=$(basename "$inputfile")
             echo "  - Running $filename"
 
-            cp "$inputfile" trace.txt
+            cp "$inputfile" test_input_file.txt
 
             # run the simulator with the test 
-            "./$SIM_PATH" test_input_file 
+            "./$SIM_PATH" test_input_file.txt
 
             # check for execution.txt 
             if [ ! -f execution.txt ]; then
                 echo "  execution.txt not found for $filename"
-                rm -f trace.txt
+                rm -f test_input_file.txt
                 continue
             fi
 
             output_path="$OUTPUT_DIR/${TEST_NAME}_${filename}_execution.txt"
             cp execution.txt "$output_path"
-            rm trace.txt
+            rm test_input_file.txt
         done
     done
 done
