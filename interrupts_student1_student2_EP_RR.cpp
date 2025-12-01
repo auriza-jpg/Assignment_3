@@ -21,34 +21,37 @@ void FCFS(std::vector<PCB> &ready_queue) {
             );
 }
 
-int EP(std::vector<PCB> &ready_queue,PCB &running) {
+int EP(std::vector<PCB> &ready_queue, PCB &running)
+{
+    if (ready_queue.empty())
+        return NO_TIMEOUT;
+
+    // Sort: smallest EP = highest priority
     std::sort(
         ready_queue.begin(),
         ready_queue.end(),
-        [](const PCB &first, const PCB &second) {
-
-            // If one PID is negative
-            if (first.EP < 0 && second.EP >= 0) return false; 
-            if (first.EP > 0 && second.EP >= 0) return true;   
-
-            return first.EP < second.EP;
+        [](const PCB &a, const PCB &b) {
+            return a.EP < b.EP;
         }
     );
 
-    if(ready_queue.empty()){
-        return 0;
-    }
-    int canidate_ep = ready_queue.back().EP;
-    if (canidate_ep < running.EP)  //compare highest priority ready against running
-    { 
-        return 1000; 
-    }
-    else if (canidate_ep == running.EP)
-    {
-       return 0;
-    }
-    else return 1000;
-}
+    // The highest priority READY process
+    const PCB &best = ready_queue.front();
+
+    // If CPU is idle we need to scheudle 
+    if (running.PID == -1)
+        return PRE_TIMEOUT; 
+
+    // If a READY process has a lower EP:
+    if (best.EP < running.EP)
+        return PRE_TIMEOUT;   // preemption 
+
+    //tie: round robin
+    if (best.EP == running.EP)
+        return RR_TIMEOUT;   
+
+    return NO_TIMEOUT;       
+ }
 
 //manage the wait Q. Tick IO progress and move IO complete process's to READY 
 std::string waitQ(std::vector<PCB> &ready_queue, std::vector<PCB> &wait_queue, std::vector<PCB> &job_list, int current_time, PCB & running)
@@ -251,7 +254,7 @@ int main(int argc, char** argv) {
     std::string line;
     std::vector<PCB> list_process;
     while(std::getline(input_file, line)) {
-        auto input_tokens = split_delim(line,"a");
+        auto input_tokens = split_delim(line,"a"); //was getting issues with stoi... 
         auto new_process = add_process(input_tokens);
         if (input_tokens.size() != 6) continue;
         list_process.push_back(new_process);

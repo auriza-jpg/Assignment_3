@@ -92,7 +92,7 @@ def average(values):
 
 
 def summarize(root):
-    schedulers = ["interrupts_EP", "interrupts_RR", "interrupts_RR_EP"]
+    schedulers = ["interrupts_EP", "interrupts_RR", "interrupts_EP_RR"]
     categories = ["IO", "CPU", "Balanced"]
 
     results = {c: {s: [] for s in schedulers} for c in categories}
