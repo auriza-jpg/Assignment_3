@@ -1,0 +1,42 @@
++------------------------------------------------+
+|Time of Transition |PID | Old State | New State |
++------------------------------------------------+
+|                 0 |354 |       NEW |     READY |
+|                 0 |354 |     READY |   RUNNING |
+|                 1 |188 |       NEW |     READY |
+|                20 |354 |   RUNNING |   WAITING |
+|                20 |188 |     READY |   RUNNING |
+|                22 |354 |   WAITING |     READY |
+|                40 |188 |   RUNNING |   WAITING |
+|                40 |354 |     READY |   RUNNING |
+|                42 |188 |   WAITING |     READY |
+|                60 |354 |   RUNNING |   WAITING |
+|                60 |188 |     READY |   RUNNING |
+|                62 |354 |   WAITING |     READY |
+|                80 |188 |   RUNNING |   WAITING |
+|                80 |354 |     READY |   RUNNING |
+|                82 |188 |   WAITING |     READY |
+|               100 |354 |   RUNNING |   WAITING |
+|               100 |188 |     READY |   RUNNING |
+|               102 |354 |   WAITING |     READY |
+|               120 |188 |   RUNNING |   WAITING |
+|               120 |354 |     READY |   RUNNING |
+|               122 |188 |   WAITING |     READY |
+|               140 |354 |   RUNNING |   WAITING |
+|               140 |188 |     READY |   RUNNING |
+|               142 |354 |   WAITING |     READY |
+|               160 |188 |   RUNNING |   WAITING |
+|               160 |354 |     READY |   RUNNING |
+|               162 |188 |   WAITING |     READY |
+|               180 |354 |   RUNNING |   WAITING |
+|               180 |188 |     READY |   RUNNING |
+|               182 |354 |   WAITING |     READY |
+|               200 |188 |   RUNNING |   WAITING |
+|               200 |354 |     READY |   RUNNING |
+|               202 |188 |   WAITING |     READY |
+|               220 |354 |   RUNNING |TERMINATED |
+|               220 |188 |     READY |   RUNNING |
+|               240 |188 |   RUNNING |   WAITING |
+|               242 |188 |   WAITING |     READY |
+|               242 |188 |     READY |   RUNNING |
+|               262 |188 |   RUNNING |TERMINATED |

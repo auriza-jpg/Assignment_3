@@ -18,7 +18,7 @@
 #include<sstream>
 #include<iomanip>
 #include<algorithm>
-
+#define TIMEOUT 100
 //An enumeration of states to make assignment easier
 enum states {
     NEW,
@@ -65,23 +65,34 @@ struct PCB{
     enum states     state;
     unsigned int    io_freq;
     unsigned int    io_duration;
+    int             EP;
 };
+
 
 //------------------------------------HELPER FUNCTIONS FOR THE SIMULATOR------------------------------
 // Following function was taken from stackoverflow; helper function for splitting strings
-std::vector<std::string> split_delim(std::string input, std::string delim) {
+std::vector<std::string> split_delim(std::string input,std::string delim) 
+{
     std::vector<std::string> tokens;
-    std::size_t pos = 0;
     std::string token;
-    while ((pos = input.find(delim)) != std::string::npos) {
-        token = input.substr(0, pos);
+    std::stringstream ss(input);
+
+    while (std::getline(ss, token, ',')) 
+    {
+        // trim leading spaces
+        while (!token.empty() && token.front() == ' ')
+            token.erase(token.begin());
+
+        // trim trailing spaces
+        while (!token.empty() && token.back() == ' ')
+            token.pop_back();
+
         tokens.push_back(token);
-        input.erase(0, pos + delim.length());
     }
-    tokens.push_back(input);
 
     return tokens;
 }
+
 
 //Function that takes a queue as an input and outputs a string table of PCBs
 std::string print_PCB(std::vector<PCB> _PCB) {
@@ -269,13 +280,23 @@ PCB add_process(std::vector<std::string> tokens) {
     process.start_time = -1;
     process.partition_number = -1;
     process.state = NOT_ASSIGNED;
-
+    process.EP = process.PID; 
     return process;
 }
 
+bool waiting_for_memory(PCB &incomming, std::vector<PCB> &missing_memory){
+    for(auto &process : missing_memory)
+    {
+        if(process.PID == incomming.PID)
+        {
+            return true;
+        }
+    }
+    return false;
+}
 //Returns true if all processes in the queue have terminated
 bool all_process_terminated(std::vector<PCB> processes) {
-
+    
     for(auto process : processes) {
         if(process.state != TERMINATED) {
             return false;
@@ -293,14 +314,7 @@ void terminate_process(PCB &running, std::vector<PCB> &job_queue) {
     sync_queue(job_queue, running);
 }
 
-//set the process in the ready queue to runnning
-void run_process(PCB &running, std::vector<PCB> &job_queue, std::vector<PCB> &ready_queue, unsigned int current_time) {
-    running = ready_queue.back();
-    ready_queue.pop_back();
-    running.start_time = current_time;
-    running.state = RUNNING;
-    sync_queue(job_queue, running);
-}
+
 
 void idle_CPU(PCB &running) {
     running.start_time = 0;
@@ -313,6 +327,20 @@ void idle_CPU(PCB &running) {
     running.size = 0;
     running.state = NOT_ASSIGNED;
     running.PID = -1;
+}
+
+//set the process in the ready queue to runnning
+void run_process(PCB &running, std::vector<PCB> &job_queue, std::vector<PCB> &ready_queue, unsigned int current_time) {
+    if(ready_queue.empty()){
+        idle_CPU(running); //no process ready to run, keep idling 
+        return;
+    }
+    running = ready_queue.back();
+    ready_queue.pop_back();
+    running.start_time = current_time;
+    running.state = RUNNING;
+    running.processing_time = 0; 
+    sync_queue(job_queue, running);
 }
 
 #endif

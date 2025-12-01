@@ -1,0 +1,37 @@
++------------------------------------------------+
+|Time of Transition |PID | Old State | New State |
++------------------------------------------------+
+|                 0 |722 |       NEW |     READY |
+|                 0 |722 |     READY |   RUNNING |
+|                 4 |305 |       NEW |     READY |
+|                10 |722 |   RUNNING |   WAITING |
+|                10 |305 |     READY |   RUNNING |
+|                12 |722 |   WAITING |     READY |
+|                22 |305 |   RUNNING |   WAITING |
+|                22 |722 |     READY |   RUNNING |
+|                24 |305 |   WAITING |     READY |
+|                32 |722 |   RUNNING |   WAITING |
+|                32 |305 |     READY |   RUNNING |
+|                34 |722 |   WAITING |     READY |
+|                44 |305 |   RUNNING |   WAITING |
+|                44 |722 |     READY |   RUNNING |
+|                46 |305 |   WAITING |     READY |
+|                54 |722 |   RUNNING |   WAITING |
+|                54 |305 |     READY |   RUNNING |
+|                56 |722 |   WAITING |     READY |
+|                66 |305 |   RUNNING |   WAITING |
+|                66 |722 |     READY |   RUNNING |
+|                68 |305 |   WAITING |     READY |
+|                76 |722 |   RUNNING |   WAITING |
+|                76 |305 |     READY |   RUNNING |
+|                78 |722 |   WAITING |     READY |
+|                88 |305 |   RUNNING |   WAITING |
+|                88 |722 |     READY |   RUNNING |
+|                90 |305 |   WAITING |     READY |
+|                98 |722 |   RUNNING |   WAITING |
+|                98 |305 |     READY |   RUNNING |
+|               100 |722 |   WAITING |     READY |
+|               105 |305 |   RUNNING |TERMINATED |
+|               105 |722 |     READY |   RUNNING |
+|               115 |722 |   RUNNING |TERMINATED |
++------------------------------------------------+
