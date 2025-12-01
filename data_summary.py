@@ -1,5 +1,6 @@
 
-from os import read
+import os 
+import csv
 from tracemalloc import start
 
 
@@ -85,13 +86,95 @@ def anaylze_data(blocks):
 def main():
     import sys
     blocks = read_output_files(sys.argv[1])
-    throughput, avg_wait, avg_turn, avg_response = anaylze_data(events)
+    throughput, avg_wait, avg_turn, avg_response = anaylze_data(blocks)
 
     print(f"Throughput:            {throughput:.3f}")
     print(f"Average Wait Time:     {avg_wait:.3f}")
     print(f"Average Turnaround:    {avg_turn:.3f}")
     print(f"Average Response Time: {avg_response:.3f}")
    
+def csv_gen(root_dir, out_csv):
+
+    simulators = ["interrupts_EP", "interrupts_RR", "interrupts_RR_EP"]
+    categories = ["IO", "CPU", "Balanced"]
+
+    results = {}
+    
+
+    #gather data from output files using the above functions 
+    for sim in simulators:
+        sim_path = os.path.join(root_dir, sim)
+        if not os.path.isdir(sim_path):
+            continue
+
+        for cat in categories:
+            cat_path = os.path.join(sim_path, cat)
+            if not os.path.isdir(cat_path):
+                continue
+
+            for fname in os.listdir(cat_path):
+                if not fname.endswith(".txt"):
+                    continue
+
+                fullpath = os.path.join(cat_path, fname)
+                blocks = read_output_files(fullpath)
+                output = anaylze_data(blocks)
+                key = (cat, fname)
+                if key not in results:
+                    results[key] = {}
+                results[key][sim] = output 
+
+
+    with open(out_csv, "w", newline="") as f:
+        w = csv.writer(f)
+
+        w.writerow([
+            "Category",
+            "Testcase",
+
+            "EP Throughput",
+            "EP Avg Wait",
+            "EP Avg Turnaround",
+            "EP Avg Response",
+
+            "RR Throughput",
+            "RR Avg Wait",
+            "RR Avg Turnaround",
+            "RR Avg Response",
+
+            "RR_EP Throughput",
+            "RR_EP Avg Wait",
+            "RR_EP Avg Turnaround",
+            "RR_EP Avg Response"
+        ])
+
+        for (cat, fname), sims in sorted(results.items()):
+
+            
+            def get(sim, index):
+                return f"{sims[sim][index]:.4f}" if sim in sims else ""
+
+            w.writerow([
+                cat,
+                fname,
+
+                get("interrupts_EP", 0),
+                get("interrupts_EP", 1),
+                get("interrupts_EP", 2),
+                get("interrupts_EP", 3),
+
+                get("interrupts_RR", 0),
+                get("interrupts_RR", 1),
+                get("interrupts_RR", 2),
+                get("interrupts_RR", 3),
+
+                get("interrupts_RR_EP", 0),
+                get("interrupts_RR_EP", 1),
+                get("interrupts_RR_EP", 2),
+                get("interrupts_RR_EP", 3)
+            ])
+
 if __name__ == "__main__":
-    main()
+    import sys
+    csv_gen(sys.argv[1], sys.argv[2])
 
