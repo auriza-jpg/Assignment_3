@@ -5,7 +5,7 @@
  * 
  */
 
-#include<interrupts_student1_student2.hpp>
+#include<interrupts_101287549_101302779.hpp>
 enum timeout {
     PRE_TIMEOUT = 0,
     RR_TIMEOUT = 100,
