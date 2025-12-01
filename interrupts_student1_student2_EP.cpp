@@ -33,7 +33,74 @@ void EP(std::vector<PCB> &ready_queue) {
 }
 
 
+//manage the wait Q. Tick IO progress and move IO complete process's to READY 
+std::string waitQ(std::vector<PCB> &ready_queue, std::vector<PCB> &wait_queue, std::vector<PCB> &job_list, int current_time, PCB & running )
+{
+    std::string execution_status;
+    if(wait_queue.empty()!=true)
+         {
+            //loop through the wait_queue
+             for(auto process  = wait_queue.begin(); process != wait_queue.end();) {
+                if(process->processing_time >= process->io_duration)
+                {
+                    //on the last tick, the processed completed its IO
+                    //it can still use this tick for CPU cycles
+                    execution_status += print_exec_status(current_time,process->PID,process->state, READY);
+                    process->state = READY; //change state to ready 
+                    process->processing_time = 0; //has spent 0 time in CPU since being kicked 
+                    PCB copy = *process;    //copy the process
+                    ready_queue.push_back(copy); //add the copy to ready 
+                    process = wait_queue.erase(process);  
+                    sync_queue(job_list,*process); //sync
+                   
+                }
+                //the process is still doing IO, it will use this tick for IO
+                else {
+                    process->processing_time +=1; 
+                     ++process; 
+                }
 
+            }
+        }
+    return execution_status;
+}
+
+//EITHER: terminate completed process's OR handle IO calls from running 
+std::string update_running(std::vector<PCB> &ready_queue, std::vector<PCB> &wait_queue, std::vector<PCB> &job_list, int current_time,  PCB & running )
+{
+
+    std::string execution_status;
+    if(running.remaining_time <=0 && running.PID >= 0 ){
+            //log termination, free the CPU and terminate the process
+            execution_status += print_exec_status(current_time,running.PID,running.state, TERMINATED);
+            terminate_process(running,job_list);
+    }
+        
+    else if (running.io_freq > 0 && running.processing_time > 0 && running.processing_time % running.io_freq == 0)
+    {
+        //on the last tick, the x required seconds of CPU completed
+        execution_status += print_exec_status(current_time,running.PID,running.state,WAITING);
+        running.state = WAITING; //IO: move -> wait 
+
+        running.processing_time = 1; //tracks IO completion. set to 1 as IO is completed in this tick
+           
+        wait_queue.push_back(running); //add the PCB to the wait Q
+        sync_queue(job_list, running); 
+        idle_CPU(running);// idle the CPU (Removes the process's PCB from running)
+    }
+
+      //add a process to running if the CPU is idle and we have ready pcb's
+    if(running.remaining_time <= 0 && !ready_queue.empty())
+    {
+        if(!ready_queue.empty()){ //if we had a process free to schedule 
+            run_process(running,job_list, ready_queue, current_time); //schedule it
+        }
+        execution_status += print_exec_status(current_time, running.PID, READY, RUNNING);
+
+    }
+
+     return execution_status;
+}
 
 
 std::tuple<std::string /* add std::string for bonus mark */ > run_simulation(std::vector<PCB> list_processes) {
@@ -82,65 +149,13 @@ std::tuple<std::string /* add std::string for bonus mark */ > run_simulation(std
         }
 
         ///////////////////////MANAGE WAIT QUEUE/////////////////////////
-         if(wait_queue.empty()!=true)
-         {
-            //loop through the wait_queue
-             for(auto process  = wait_queue.begin(); process != wait_queue.end();) {
-                if(process->processing_time >= process->io_duration)
-                {
-                    //on the last tick, the processed completed its IO
-                    //it can still use this tick on CPU cycles
-                    execution_status += print_exec_status(current_time,process->PID,process->state, READY);
-                    process->state = READY; //change state to ready 
-                    PCB copy = *process;    //copy the process
-                    ready_queue.push_back(copy); //add the copy to ready 
-                    process = wait_queue.erase(process);  
-                    sync_queue(job_list,*process); //sync
-                   
-                }
-                //the process is still doing IO, it will use this tick for IO
-                else {
-                    process->processing_time +=1; 
-                     ++process; 
-                }
-
-            }
-        }
+         execution_status += waitQ(ready_queue,wait_queue,job_list, current_time,running);
         
         //////////////////////////SCHEDULER//////////////////////////////
         EP(ready_queue);// schedule process from the results of last tick 
-        if(running.remaining_time <=0 && running.PID >= 0 ){
-            //log termination, free the CPU and terminate the process
-            execution_status += print_exec_status(current_time,running.PID,running.state, TERMINATED);
-            terminate_process(running,job_list);
-             if(!ready_queue.empty()){ //if we had a process free to schedule 
-                 run_process(running,job_list, ready_queue, current_time); //schedule it
-             }
-           
-        }
-        
-        else if (running.io_freq > 0 && running.processing_time > 0 && running.processing_time % running.io_freq == 0)
-        {
-            //on the last tick, the x required seconds of CPU completed
-            execution_status += print_exec_status(current_time,running.PID,running.state,WAITING);
-            running.state = WAITING; //IO: move -> wait 
+       
+        execution_status += update_running(ready_queue,wait_queue,job_list, current_time,running); 
 
-            
-            running.processing_time = 1; //tracks IO completion. set to 1 as IO is completed in this tick
-           
-            wait_queue.push_back(running); //add the PCB to the wait Q
-            sync_queue(job_list, running); 
-            idle_CPU(running);// idle the CPU (Removes the process's PCB from running)
-        }
-
-
-        //add a process to running if the CPU is idle and we have ready pcb's
-        if(running.remaining_time <= 0 && !ready_queue.empty())
-        {
-            run_process(running, job_list, ready_queue, current_time); 
-            execution_status += print_exec_status(current_time, running.PID, READY, RUNNING);
-            
-        }
         if(running.state == RUNNING)
         {
             //the running process uses this tick for CPU 
@@ -155,8 +170,6 @@ std::tuple<std::string /* add std::string for bonus mark */ > run_simulation(std
         if(all_process_terminated(job_list)){
             return make_tuple(execution_status);
         }
-       
-    
     }
     
     //Close the output table

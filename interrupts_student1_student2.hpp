@@ -18,7 +18,7 @@
 #include<sstream>
 #include<iomanip>
 #include<algorithm>
-
+#define TIMEOUT 100
 //An enumeration of states to make assignment easier
 enum states {
     NEW,
@@ -313,7 +313,7 @@ void idle_CPU(PCB &running) {
 //set the process in the ready queue to runnning
 void run_process(PCB &running, std::vector<PCB> &job_queue, std::vector<PCB> &ready_queue, unsigned int current_time) {
     if(ready_queue.empty()){
-        idle_CPU(running);
+        idle_CPU(running); //no process ready to run, keep idling 
         return;
     }
     running = ready_queue.back();
