@@ -163,7 +163,6 @@ std::tuple<std::string /* add std::string for bonus mark */ > run_simulation(std
                     execution_status += print_exec_status(current_time, process.PID, NEW, READY);
                 }
                 else needs_memory.push_back(process);
-               
             }
         }
 
