@@ -89,7 +89,7 @@ std::string update_running(std::vector<PCB> &ready_queue, std::vector<PCB> &wait
         idle_CPU(running);// idle the CPU (Removes the process's PCB from running)
     }
 
-      //add a process to running if the CPU is idle and we have ready pcb's
+    //add a process to running if the CPU is idle and we have ready pcb's
     if(running.remaining_time <= 0 && !ready_queue.empty())
     {
         if(!ready_queue.empty()){ //if we had a process free to schedule 
@@ -149,7 +149,7 @@ std::tuple<std::string /* add std::string for bonus mark */ > run_simulation(std
         }
 
         ///////////////////////MANAGE WAIT QUEUE/////////////////////////
-         execution_status += waitQ(ready_queue,wait_queue,job_list, current_time,running);
+        execution_status += waitQ(ready_queue,wait_queue,job_list, current_time,running);
         
         //////////////////////////SCHEDULER//////////////////////////////
         EP(ready_queue);// schedule process from the results of last tick 

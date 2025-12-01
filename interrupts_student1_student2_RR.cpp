@@ -68,7 +68,7 @@ std::string timer_experiry(std::vector<PCB> &ready_queue, std::vector<PCB> &wait
             sync_queue(job_list, running); 
             execution_status += print_exec_status(current_time,running.PID, RUNNING, READY);//log
 
-            //schedule the incoming process. 
+            //schedule the next process. 
             run_process(running,job_list,ready_queue,current_time); //get a new process from ready
             if(running.PID != -1)//don't log idle if no process can be scheduled 
             {
