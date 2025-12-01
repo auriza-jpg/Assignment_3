@@ -18,20 +18,21 @@ void FCFS(std::vector<PCB> &ready_queue) {
 }
 
 void EP(std::vector<PCB> &ready_queue) {
-    std::sort( 
-                ready_queue.begin(),
-                ready_queue.end(),
-                []( const PCB &first, const PCB &second ){
-                    return (first.EP < second.EP); 
-                } 
-            );
+    std::sort(
+        ready_queue.begin(),
+        ready_queue.end(),
+        [](const PCB &first, const PCB &second) {
+
+            // If one PID is negative
+            if (first.PID < 0 && second.PID >= 0) return false; 
+            if (first.PID > 0 && second.PID >= 0) return true;   
+
+            return first.EP < second.EP;
+        }
+    );
 }
 
-void calcWhenDoneIO(std::vector<PCB> &ready_queue){
-    for(auto &process :ready_queue){
 
-    }
-}
 
 
 
@@ -57,8 +58,8 @@ std::tuple<std::string /* add std::string for bonus mark */ > run_simulation(std
 
     //Loop while till there are no ready or waiting processes.
     //This is the main reason I have job_list, you don't have to use it.
-    while(!all_process_terminated(job_list) || job_list.empty()) {
-
+    while(!all_process_terminated(job_list)||job_list.empty() ) 
+    {
         //Inside this loop, there are three things you must do:
         // 1) Populate the ready queue with processes as they arrive
         // 2) Manage the wait queue
@@ -73,74 +74,93 @@ std::tuple<std::string /* add std::string for bonus mark */ > run_simulation(std
                 //if so, assign memory and put the process into the ready queue
                 assign_memory(process);
                 process.state = READY;  //Set the process state to READY
+                execution_status += print_exec_status(current_time,process.PID,NEW,READY);
+                process.processing_time = 0; //we have done no cpu
                 ready_queue.push_back(process); //Add the process to the ready queue
                 job_list.push_back(process); //Add it to the list of processes
-                execution_status += print_exec_status(current_time, process.PID, NEW, READY);
             }
         }
 
         ///////////////////////MANAGE WAIT QUEUE/////////////////////////
-         if(!wait_queue.empty())
+         if(wait_queue.empty()!=true)
          {
             //loop through the wait_queue
              for(auto process  = wait_queue.begin(); process != wait_queue.end();) {
-                if(process->processing_time == process->io_duration)\
+                if(process->processing_time >= process->io_duration)
                 {
                     //on the last tick, the processed completed its IO
                     //it can still use this tick on CPU cycles
-                    print_exec_status(current_time,process->PID,process->state, READY);
-                    ready_queue.push_back(*process); //add to ready 
-                    ready_queue.erase(process);  //remove from wait 
-                    process->state = READY;
-                    
+                    execution_status += print_exec_status(current_time,process->PID,process->state, READY);
+                    process->state = READY; //change state to ready 
+                    PCB copy = *process;    //copy the process
+                    ready_queue.push_back(copy); //add the copy to ready 
+                    process = wait_queue.erase(process);  
+                    sync_queue(job_list,*process); //sync
+                   
                 }
                 //the process is still doing IO, it will use this tick for IO
-                else process->processing_time +=1;
+                else {
+                    process->processing_time +=1; 
+                     ++process; 
+                }
+
             }
         }
         
         //////////////////////////SCHEDULER//////////////////////////////
         EP(ready_queue);// schedule process from the results of last tick 
-    
-        if(running.state == TERMINATED)
-        {
+        if(running.remaining_time <=0 && running.PID >= 0 ){
             //log termination, free the CPU and terminate the process
-            print_exec_status(current_time,running.PID,running.state,TERMINATED);
+            execution_status += print_exec_status(current_time,running.PID,running.state, TERMINATED);
             terminate_process(running,job_list);
-            idle_CPU(running); 
+             if(!ready_queue.empty()){ //if we had a process free to schedule 
+                 run_process(running,job_list, ready_queue, current_time); //schedule it
+             }
+           
         }
-        //on the last tick, the x required seconds of CPU completed, do IO for this tick
-        else if (running.io_freq > 0 && running.processing_time > 0 
-            && running.processing_time % running.io_freq == 0)
+        
+        else if (running.io_freq > 0 && running.processing_time > 0 && running.processing_time % running.io_freq == 0)
         {
-            print_exec_status(current_time,running.PID,running.state,WAITING);
+            //on the last tick, the x required seconds of CPU completed
+            execution_status += print_exec_status(current_time,running.PID,running.state,WAITING);
             running.state = WAITING; //IO: move -> wait 
-            running.processing_time = 1; //using this varible to track IO completion, so set it to 1
-            //this is set to 1 because the process will use the current tick to complete 1 second of IO
+
             
+            running.processing_time = 1; //tracks IO completion. set to 1 as IO is completed in this tick
+           
             wait_queue.push_back(running); //add the PCB to the wait Q
             sync_queue(job_list, running); 
             idle_CPU(running);// idle the CPU (Removes the process's PCB from running)
-            
         }
-        //add a process to running if the CPU is idle 
-        if(running.state == NOT_ASSIGNED || running.state == TERMINATED|| running.state == WAITING)
+
+
+        //add a process to running if the CPU is idle and we have ready pcb's
+        if(running.remaining_time <= 0 && !ready_queue.empty())
         {
             run_process(running, job_list, ready_queue, current_time); 
-            print_exec_status(current_time, running.PID, READY, RUNNING);
+            execution_status += print_exec_status(current_time, running.PID, READY, RUNNING);
+            
         }
         if(running.state == RUNNING)
         {
             //the running process uses this tick for CPU 
-            running.remaining_time += 1;
+            if (running.remaining_time > 0)
+                running.remaining_time -= 1; 
             running.processing_time +=1; 
+            current_time +=1;
+            sync_queue(job_list,running);
         }
+        else current_time ++;
+
+        if(all_process_terminated(job_list)){
+            return make_tuple(execution_status);
+        }
+       
     
     }
     
     //Close the output table
     execution_status += print_exec_footer();
-
     return std::make_tuple(execution_status);
 }
 
@@ -153,6 +173,8 @@ int main(int argc, char** argv) {
         std::cout << "To run the program, do: ./interrutps <your_input_file.txt>" << std::endl;
         return -1;
     }
+
+    std::cout<<"in nain"<<std::endl;
 
     //Open the input file
     auto file_name = argv[1];

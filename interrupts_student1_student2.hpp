@@ -277,7 +277,7 @@ PCB add_process(std::vector<std::string> tokens) {
 
 //Returns true if all processes in the queue have terminated
 bool all_process_terminated(std::vector<PCB> processes) {
-
+    
     for(auto process : processes) {
         if(process.state != TERMINATED) {
             return false;
@@ -295,16 +295,6 @@ void terminate_process(PCB &running, std::vector<PCB> &job_queue) {
     sync_queue(job_queue, running);
 }
 
-//set the process in the ready queue to runnning
-void run_process(PCB &running, std::vector<PCB> &job_queue, std::vector<PCB> &ready_queue, unsigned int current_time) {
-    running = ready_queue.back();
-    ready_queue.pop_back();
-    running.start_time = current_time;
-    running.state = RUNNING;
-    running.processing_time = 0; 
-    sync_queue(job_queue, running);
-}
-
 
 
 void idle_CPU(PCB &running) {
@@ -318,6 +308,20 @@ void idle_CPU(PCB &running) {
     running.size = 0;
     running.state = NOT_ASSIGNED;
     running.PID = -1;
+}
+
+//set the process in the ready queue to runnning
+void run_process(PCB &running, std::vector<PCB> &job_queue, std::vector<PCB> &ready_queue, unsigned int current_time) {
+    if(ready_queue.empty()){
+        idle_CPU(running);
+        return;
+    }
+    running = ready_queue.back();
+    ready_queue.pop_back();
+    running.start_time = current_time;
+    running.state = RUNNING;
+    running.processing_time = 0; 
+    sync_queue(job_queue, running);
 }
 
 #endif

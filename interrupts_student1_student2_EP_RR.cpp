@@ -25,7 +25,6 @@ std::tuple<std::string /* add std::string for bonus mark */ > run_simulation(std
                                     //to the "Process, Arrival time, Burst time" table that you
                                     //see in questions. You don't need to use it, I put it here
                                     //to make the code easier :).
-     std::vector<PCB> job_list;
     unsigned int current_time = 0;
     PCB running;
 
@@ -39,7 +38,7 @@ std::tuple<std::string /* add std::string for bonus mark */ > run_simulation(std
 
     //Loop while till there are no ready or waiting processes.
     //This is the main reason I have job_list, you don't have to use it.
-    while(!all_process_terminated(job_list) || job_list.empty()) {
+    while(!all_process_terminated(job_list) ||!job_list.empty()) {
 
         //Inside this loop, there are three things you must do:
         // 1) Populate the ready queue with processes as they arrive
