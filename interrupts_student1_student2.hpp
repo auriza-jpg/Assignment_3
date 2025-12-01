@@ -275,6 +275,16 @@ PCB add_process(std::vector<std::string> tokens) {
     return process;
 }
 
+bool waiting_for_memory(PCB &incomming, std::vector<PCB> &missing_memory){
+    for(auto &process : missing_memory)
+    {
+        if(process.PID == incomming.PID)
+        {
+            return true;
+        }
+    }
+    return false;
+}
 //Returns true if all processes in the queue have terminated
 bool all_process_terminated(std::vector<PCB> processes) {
     

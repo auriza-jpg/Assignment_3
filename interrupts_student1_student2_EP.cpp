@@ -111,6 +111,8 @@ std::tuple<std::string /* add std::string for bonus mark */ > run_simulation(std
                                     //to the "Process, Arrival time, Burst time" table that you
                                     //see in questions. You don't need to use it, I put it here
                                     //to make the code easier :).
+    std::vector<PCB> needs_memory; //stores PCB's that did not get memory on arrival 
+
 
     unsigned int current_time = 0;
     PCB running;
@@ -137,16 +139,22 @@ std::tuple<std::string /* add std::string for bonus mark */ > run_simulation(std
         std::vector<PCB>used_tick_to_finish_IO;
         
         for(auto &process : list_processes) {
-            if(process.arrival_time == current_time) {//check if the AT = current time
+
+             if(process.arrival_time == current_time || waiting_for_memory(process,needs_memory)){
                 //if so, assign memory and put the process into the ready queue
-                assign_memory(process);
-                process.state = READY;  //Set the process state to READY
-                execution_status += print_exec_status(current_time,process.PID,NEW,READY);
-                process.processing_time = 0; //we have done no cpu
-                ready_queue.push_back(process); //Add the process to the ready queue
-                job_list.push_back(process); //Add it to the list of processes
+                if(assign_memory(process)){
+                    process.arrival_time = current_time; //update arrival time for processes that did not get memory on arrival 
+                    process.state = READY;  //Set the process state to READY
+                    ready_queue.push_back(process); //Add the process to the ready queue
+                    job_list.push_back(process); //Add it to the list of processes
+                    process.EP = process.PID + process.size;
+                    execution_status += print_exec_status(current_time, process.PID, NEW, READY);
+                }
+                else needs_memory.push_back(process);
+               
             }
         }
+
 
         ///////////////////////MANAGE WAIT QUEUE/////////////////////////
         execution_status += waitQ(ready_queue,wait_queue,job_list, current_time,running);
